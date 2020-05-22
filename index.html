@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <title>Creator URL</title>
-
+	<meta name="robots" content="noindex">
+	<meta name="googlebot" content="noindex">
     <meta
       name="description"
       content="Zmags is a content creation tool used to create and publish experiences to your website"
@@ -38,17 +39,154 @@
     <!-- CSS  -->
 
     <!-- JS -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous"
-    ></script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
     <!-- JS -->
   </head>
   <body>
+    <!-- JS: Handling of sending of data to sheets -->
+    <script>
+	$( document ).ready(function() {
+		$(".boom").click(function() {
+			if($(this).hasClass('clicked')){
+				$(this).removeClass('clicked');
+			} else {
+				$('.boom').removeClass('clicked');
+				$(this).addClass('clicked');
+			}
+		});
+		$(".boomtwo").click(function() {
+			if($(this).hasClass('clicked')){
+				$(this).removeClass('clicked');
+			} else {
+				$('.boomtwo').removeClass('clicked');
+				$(this).addClass('clicked');
+			}
+		});
+		$(".boomthree").click(function() {
+			if($(this).hasClass('clicked')){
+				$(this).removeClass('clicked');
+			} else {
+				$('.boomthree').removeClass('clicked');
+				$(this).addClass('clicked');
+			}
+		});
+	});
+	
+	var xhReq = new XMLHttpRequest();
+	xhReq.open("GET", 'https://sheets.googleapis.com/v4/spreadsheets/1uvR-NcqFeqhBavIokcDl4Lv7a8cyAVw7dti5Hol70nI/values/Sheet1!A:D?key=AIzaSyCOkvqyD54WTLneD9kaCO0u0yLUjfJen5Q', false);
+	xhReq.send(null);
+	var jsonObject = JSON.parse(xhReq.responseText);
+	var globalData = [];
+	setTimeout(function(){ loadData(); }, 1000);
+		
+	var userData;
+	var vertical;
+	var ecomm;
+	var usecase;
+
+	$(document).ready(function () {
+	$.fn.serializeObject = function () {
+	  var o = {};
+	  var a = this.serializeArray();
+	  $.each(a, function () {
+		if (o[this.name]) {
+		  if (!o[this.name].push) {
+			o[this.name] = [o[this.name]];
+		  }
+		  o[this.name].push(this.value || "");
+		} else {
+		  o[this.name] = this.value || "";
+		}
+	  });
+	  return o;
+	};
+	});
+
+	function setVert(option){ 
+		if(option == vertical){
+			vertical = 'N/A';
+		} else {
+			vertical = option; 
+		}
+	}
+	function setEcomm(option){ 
+		if(option == ecomm){
+			ecomm = 'N/A';
+		} else {
+			ecomm = option; 
+		}
+	}
+	function setUse(option){ 
+		if(option == usecase){
+			usecase = 'N/A';
+		} else {
+			usecase = option; 
+		}
+	}
+
+	function sendToSheets() {
+		if(usecase == "N/A" || ecomm == "N/A" || vertical == "N/A"){
+			alert("Please select 1 attribute from each section.");
+		} else {
+		
+			var webURL = document.getElementById("homepage").value;
+			var isThereAMatch=0;
+
+			for(i=1;i<jsonObject.values.length;i++){
+				if(usecase == "homepage"){
+					if(jsonObject.values[i][0]== webURL){
+						isThereAMatch=1;
+					}
+				} else {
+					if(jsonObject.values[i][0].indexOf(webURL) >(-1)){
+						isThereAMatch=1;
+					}
+				}
+			}
+		
+			if(isThereAMatch == 0){
+				var userInput = {
+				  'URL': document.getElementById("homepage").value,
+				  'Vertical': vertical,
+				  'Ecomm': ecomm,
+				  'Use-case': usecase
+				};
+
+				var url = "https://script.google.com/macros/s/AKfycbxZV1MZXa4TwWbJ1WNMi9QlhB5qMWtGi5p22vkXnJqfcXR3LqQ/exec";
+
+				var jqxhr = $.ajax({
+				  url: url,
+				  method: "GET",
+				  dataType: "json",
+				  data: userInput,
+				  success: function (data) {
+					//nothing for now
+				  },
+				});
+				
+				$('.boomthree').removeClass('clicked');
+				$('.boomtwo').removeClass('clicked');
+				$('.boom').removeClass('clicked');
+				document.getElementById('homepage').value = '';
+				
+			} else {
+				alert("URL Already Exists! Please enter another URL.")
+			}
+			
+		}
+	}
+	  
+	function loadData() {
+		for(i=1;i<jsonObject.values.length;i++)
+		{
+			globalData[jsonObject.values[i][0]] = {'pURL': jsonObject.values[i][0], 'pVert': jsonObject.values[i][1], 'pEcomm':  jsonObject.values[i][2], 'pUse':  jsonObject.values[i][3]};
+		}
+	}
+    </script>
+    <!-- end of JS -->
+	
     <div class="wrapper">
       <div class="margins header"></div>
       <div class="sidebar"></div>
@@ -59,7 +197,7 @@
           </div>
 
           <div class="bullet-two">
-            <div class="numbers">2. Select Category</div>
+            <div class="numbers">2. Select Vertical</div>
           </div>
 
           <div class="bullet-three">
@@ -67,21 +205,41 @@
           </div>
 
           <div class="url-input">
-            <input type="url" id="homepage" name="homepage" />
+            <input type="url" id="homepage" name="urlInput" />
           </div>
 
           <div class="categories" id="myDIV">
-            <button class="boom">Fashion</button>
-            <button class="boom">Automotive</button>
-            <button class="boom">Furniture</button>
-            <button class="boom">Non-Retail</button>
-            <button class="boom">Outdoor</button>
-            <button class="boom">B2B</button>
-            <button class="boom">Food &amp; Drink</button>
+			<button class="boom" onclick="setVert('fashion')">Fashion</button>
+			<button class="boom" onclick="setVert('beauty')">Beauty</button>
+			<button class="boom" onclick="setVert('furniture')">Furniture</button>
+			<button class="boom" onclick="setVert('non-retail')">Non-Retail</button>
+			<button class="boom" onclick="setVert('active')">Active</button>
+			<button class="boom" onclick="setVert('jewelry')">Jewelry</button>
+			<button class="boom" onclick="setVert('food')">Food &amp; Drink</button>
+			<button class="boom" onclick="setVert('other')">Other</button>
+			
+            <div class="grey-line"></div>
+
+            <button class="boomtwo" onclick="setEcomm('sfcc')">Salesforce</button>
+			<button class="boomtwo" onclick="setEcomm('magento')">Magento</button>
+			<button class="boomtwo" onclick="setEcomm('shopify')">Shopify</button>
+			<button class="boomtwo" onclick="setEcomm('bigcommerce')">BigCommerce</button>
+			<button class="boomtwo" onclick="setEcomm('zsites')">Zsites</button>
+			<button class="boomtwo" onclick="setEcomm('other')">Other</button>
+
+            <div class="grey-line"></div>
+
+            <button class="boomthree" onclick="setUse('homepage')">Homepage</button>
+			<button class="boomthree" onclick="setUse('landing')">Landing</button>
+			<button class="boomthree" onclick="setUse('quiz')">Quiz</button>
+			<button class="boomthree" onclick="setUse('banner')">Banner</button>
+			<button class="boomthree" onclick="setUse('lookbook')">Look Book</button>
+			<button class="boomthree" onclick="setUse('blog')">Blog</button>
+			<button class="boomthree" onclick="setUse('other')">Other</button>
           </div>
 
           <div class="submit">
-            <button>Submit</button>
+            <button onclick="sendToSheets()">Submit</button>
           </div>
         </div>
       </div>

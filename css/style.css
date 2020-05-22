@@ -105,6 +105,14 @@ input {
   color: slategray;
 }
 
+.grey-line {
+  width: 90%;
+  height: 2px;
+  background-color: #c3c3c3;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
 .numbers {
   background-color: #fff;
   padding: 10px;
@@ -147,6 +155,13 @@ input {
   color: #fff;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.clicked {
+  background-color: #50246f !important;
+  -webkit-transition: 0.3s !important;
+  color: #fff !important;
+  border: 2px solid #50246f !important;
 }
 
 .active {
