@@ -140,7 +140,8 @@ button.nav-buttons:hover {
   background-color: #fff;
   padding: 10px;
   /* position: relative; */
-  height: 513px;
+  /* height: 513px; */
+  height: 579px;
   overflow: hidden;
 }
 
