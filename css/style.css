@@ -219,12 +219,6 @@ input {
   border: 2px solid #50246f !important;
 }
 
-.active {
-  color: #fff !important;
-  background-color: #50246f !important;
-  border: 2px solid#50246f !important;
-}
-
 input:focus,
 textarea:focus,
 select:focus,
